@@ -1,0 +1,163 @@
+#ui_login {
+	display: block; 
+	background-color:#2abd438c;  
+	border-radius: 5px; 
+	padding: 5px; 
+	font-family: "Roboto";
+}
+
+#ui_counter, #ui_game {
+	display: none;
+}
+
+#ui_play{
+	display: block; 
+	background-color:#28b394;  
+	padding: 5px;
+	font-family: "Roboto";
+
+}
+
+#ui_register {
+	display:block; 
+	background-color:#2927ac;  
+	padding: 5px; 
+	font-family: "Roboto"
+
+}
+
+#ui_navigation {
+	text-align:center; 
+	font-family: "Roboto";
+}
+
+#ui_instructions {
+	padding: 5px;
+	display:'block';
+	background-color:#28b394; 
+	max-width:100%;
+	font-family: "Roboto";
+}
+
+#ui_profile {
+	padding: 5px;
+	display:'block';
+	background-color:#28b394; 
+	max-width:100%;
+	font-family: "Roboto";
+}
+
+body {
+	position: relative; 
+	margin: 10px; 
+	padding: 0; 
+}
+
+header {
+	width: 100%;
+}
+header h1 {
+	margin:0px; 
+	display:inline-block;
+}
+
+nav {
+	/* font: 16px Verdana, sans-serif; */
+        float:right; 
+}
+
+nav a {
+	display: inline-block;
+	text-align: center;
+	font: bold 1em sans-serif;
+	padding: 5px 10px; /* top and bottom, left and right */
+	margin: 0 0 2px 0; /* top right bottom left */
+	border: 2px solid black;
+	/* border-width: 0px; */
+	text-decoration: none; /* none, underline, overline, blink */
+	color: #000;
+	background:#6f6;
+}
+
+nav a:hover {color: #fff;}
+
+.ui_top h2 {
+	text-align: center;
+}
+
+.nav_selected {
+	color: #6f6;
+	background: #000;
+}
+
+div.form-top {
+	border:1px solid black;
+	margin-left: auto;
+	margin-right:auto;
+	padding: 10px;
+    	display: table;
+}
+
+div.ins-box {
+	border: solid #65eaff 5px;
+	background-color: #65eaff;
+	margin-top: 10px;
+	padding: 0px;
+	border-radius: 5px;
+
+}
+
+
+div.prof-box {
+	border: solid #65eaff  5px;
+	background-color: #65eaff;
+	margin-top: 10px;
+	padding-left: 5px;
+	padding-top: 10px;
+	border-radius: 5px;
+}
+
+
+div.reg-box {
+	border: solid lightblue 5px;
+	background-color: lightblue;
+	margin-top: 10px;
+	padding-left: 5px;
+	padding-top: 10px;
+	border-radius: 5px;
+}
+
+div.log-box {
+	border: solid #6f6 5px;
+	background-color: #6f6;
+	margin-top: 10px;
+	padding-left: 5px;
+	padding-top: 10px;
+	border-radius: 5px;
+}
+
+h1 {
+	font-family: Roboto;
+}
+
+h2{
+	font-family: Roboto;
+}
+
+div.form-row {
+    display: table-row;
+}
+div.form-errors {
+	background: rgb(233, 121, 121);
+	color: white;
+	font: 30px "Roboto";
+	text-align: center;
+	border-radius: 2px;
+	border: rgb(233, 121, 121);
+	/*padding: 3px;*/
+}
+
+label, input {
+    display: table-cell;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="lib/react.js"></script>
+    <script src="lib/react-dom.js"></script>
+    <script src="lib/babel.min.js"></script>
+
+    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.production.min.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script language="javascript" src="lib/jquery-3.3.1.min.js"></script>
+    <script language="javascript" src="controller.js"></script>
+    <script language="javascript" src="rest.js"></script>
+    <script language="javascript" src="clientModel.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+
+    <script type="text/babel">
+    const {Button, TextField, CheckBox, Select, Radio, RadioGroup, FormLabel, FormControlLabel,
+       FormHelperText, AppBar, InputLabel, MenuItem, Input, Tabs,Grow,Box} = MaterialUI;
+      
+    
+      //component that contains game canvas 
+      class GameWindow extends React.Component {
+          constructor(props){
+              super(props);
+              this.state={height: Math.min(window.screen.height * 0.6, 700),
+                          width: Math.min(window.screen.width * 0.9, 700)
+                        };
+          }
+  
+          componentDidMount(){
+              setupGame(this.props.user);
+              startGame(); 
+          }
+      
+          render() {
+              return (
+                  <div className="ui-top" id="ui_play">
+                    <Grow in={true} mountOnEnter unmountOnExit >
+                      <Box>
+                        <center>
+                          <canvas id="stage" width={this.state.width} height={this.state.height} style={{border:'1px solid black', backgroundColor: 'white'}}> </canvas>
+                          <div><Button variant='contained' onClick={this.props.clickHandler} > Grant Permissions (for mobile features) </Button>
+                          <h2> To restart game, click How to play then go back to play </h2> </div>
+                          <div id='status'></div> 
+                        </center>
+                      </Box>
+                    </Grow> 
+                   </div>
+              );	 
+          }
+      }
+      
+      //intructions page
+      class Instructions extends React.Component {
+          render() {
+              return (
+                  <div id="ui_instructions" style={{}}>
+                    <Grow in={true} mountOnEnter unmountOnExit >
+                        <Box>
+                    <div className='ins-box'>
+                      <ul><h2> To restart game, click HOW TO PLAY then go back to PLAY </h2> </ul>
+                    </div>
+                    <div className="ins-box">
+                      <ul>
+                        <h2> Desktop Controls </h2>
+                        <li>Move with <code>wasd</code> </li>
+                        <li>Boxes restore ammunition and health , move next to them and press <code>e</code> </li>
+                        <li>Aim with your mouse </li>
+                        <li>Mouse click fires </li>
+                      </ul>
+                      </div>
+                      <div className="ins-box">
+                      <ul>
+                        <h2> Mobile Controls </h2>
+                        <li>Swipe on the screen to move in that direction </li>
+                        <li>Hold for longer while swiping for more directional control </li>
+                        <li>Tap to shoot in the direction of where you tapped </li>
+                        <li>Shake device to restore ammunition and health on android chrome</li>
+                        <li>Backup: Tap with two fingers near a box to restore ammunition and health </li>
+                      </ul>
+                    </div>
+                </Box></Grow>  </div>
+              );
+          }
+      }
+      
+      //navigation bar 
+      class Navigation extends React.Component {
+          render(){
+              return (
+                <div id="ui_navigation">
+                    <header>
+                        <AppBar position='static' width='100%'  id="ui_nav">
+                          <Tabs value={this.props.curpage} width="100%">
+                            <Button  onClick={this.props.clickHandler} style={{ paddingLeft:"2px",paddingRight:"2px", marginTop:'0%', height:"48px", width:"25%", marginBottom:"0%", color: 'orange'}} name="play" value='play'> Play </Button>
+                            <Button  onClick={this.props.clickHandler} style={{ marginTop:'0%', width:"25%", marginBottom:"0%", color: 'orange'}} name="instructions" value='instructions'> How to Play </Button>
+                            <Button  onClick={this.props.clickHandler} style={{ marginTop:'0%', width:"25%", marginBottom:"0%", color: 'orange'}} name="profile" value='profile'> Profile </Button>
+                            <Button  onClick={this.props.clickHandler} style={{ marginTop:'0%', width:"25%", marginBottom:"0%", color: 'orange'}} name="logout" value='logout'> Logout </Button> 
+                          </Tabs>
+                        </AppBar>
+                    </header>
+                    
+                  </div>
+              );
+          }
+      }
+      
+      //registration page
+      class RegisterDetails extends React.Component {
+          render() {
+              return (   
+                  <div id="ui_register" >
+                      <Grow in={true} mountOnEnter unmountOnExit >
+                        <Box>
+                          <div className='reg-box'>
+                            <h1>f0rt9it32d</h1>
+                            <h2 >Registration</h2></div>
+                          <div className='reg-box'>  
+                            <TextField error={this.props.iserror.usererror} helperText={this.props.errors.reguser} label='username' variant ='outlined' name='user'  /><br/><br/>
+                            <TextField error={this.props.iserror.passworderror} helperText={this.props.errors.regpassword} label='password' variant ='outlined' name='password' type='password' /><br/><br/>
+                            <TextField error={this.props.iserror.cpassworderror} helperText={this.props.errors.regcpassword} label='confirm password' variant ='outlined' name='confirmpassword' type='password' /><br/><br/>
+                          </div>
+                          <div className='reg-box'>
+                            <FormLabel component="legend">Select your skill level</FormLabel>
+                            <RadioGroup row aria-label="skill" name="skill" /*value={value}*/ /*onChange={handleRadioChange}*/>
+                                <FormControlLabel value="beginner" control={<Radio />} label="Beginner" />
+                                <FormControlLabel value="intermediate" control={<Radio />} label="Intermediate" />
+                                <FormControlLabel value="advanced" control={<Radio />} label="Advanced" />
+                            </RadioGroup>
+                            <FormHelperText style={{color:"red"}}>{this.props.errors.regskill}</FormHelperText><br/>
+                          </div>
+                          <div className='reg-box'>
+                            <FormLabel>Birthday</FormLabel><br/><br/>
+                            <FormLabel>Year</FormLabel><br/><br/>
+                            <Input margin="dense" inputProps={{ step: 1, min: 1900, max: 2100, type: 'number' }} name='year' defaultValue={1999} /><br/><br/>
+                            <FormHelperText style={{color:"red"}}>{this.props.errors.regyear}</FormHelperText><br/>
+                            <InputLabel>Month</InputLabel>
+                            <Select variant="filled" label="Month"  defaultValue="" name='month'>
+                                <MenuItem value="">None</MenuItem>
+                                <MenuItem value='Jan'>January</MenuItem>
+                                <MenuItem value='Feb'>February</MenuItem>
+                                <MenuItem value='Mar'>March</MenuItem>
+                                <MenuItem value='Apr'>April</MenuItem>
+                                <MenuItem value='May'>May</MenuItem>
+                                <MenuItem value='Jun'>June</MenuItem>
+                                <MenuItem value='Jul'>July</MenuItem>
+                                <MenuItem value='Aug'>August</MenuItem>
+                                <MenuItem value='Sep'>September</MenuItem>
+                                <MenuItem value='Oct'>October</MenuItem>
+                                <MenuItem value='Nov'>November</MenuItem>
+                                <MenuItem value='Dec'>December</MenuItem>
+                            </Select>
+                            <FormHelperText style={{color:"red"}}>{this.props.errors.regmonth}</FormHelperText><br/><br/>
+                            <FormLabel component="legend">Day</FormLabel>
+                            <Input margin="dense" inputProps={{ step: 1, min: 1, max: 31, type: 'number' }} name='day' defaultValue={1} /><br/><br/>
+                            <FormHelperText style={{color:"red"}}>{this.props.errors.regday}</FormHelperText><br/>
+                          </div>
+                          <div className='reg-box'>
+                            <Button variant='contained' onClick={this.props.clickHandler} value={'login'} > Go to Login </Button> 
+                            <Button variant='contained' color='primary' onClick={this.props.clickHandler} value={'register'}> Register </Button><br/><br/>
+                            <div className="form-errors" style={{ backgroundColor:"red", textAlign:"center", color:"white", width:'200px'}} colSpan="2">{this.props.errors.regdb}</div>
+                          </div> 
+                      </Box></Grow> 
+                  </div>  
+              );
+          }
+      }
+      
+      //login page
+      class LoginDetails extends React.Component {
+          render() {
+              return (
+                  <div id="ui_login" >
+                    <Grow in={true} mountOnEnter unmountOnExit >
+                      <Box>
+                        <div className='log-box'>
+                          <h1>f0rt9it32d</h1>
+                          <h2>Login</h2>
+                        </div>
+                        <div className='log-box'>
+                          <TextField variant ='outlined' error={this.props.iserror.usererror} helperText={this.props.errors.user} name="user" defaultValue={this.props.values.firstName} label='username'/><br/><br/>
+                          <TextField variant ='outlined' error={this.props.iserror.passworderror} helperText={this.props.errors.password} name="password" type='password' label='password'/><br/><br/> 
+                          <Button variant="contained" color='primary' onClick={this.props.clickHandler} value={'login'} > Login </Button> 
+                          <Button variant="contained" onClick={this.props.clickHandler} value={'register'}> Registration </Button><br/><br/>
+                          <div className="form-errors" colSpan="2">{this.props.errors.login}</div>
+                        </div>  
+                      </Box>
+                    </Grow> 
+                  </div>
+              );
+          }
+      }
+      
+      //profile page
+      class ProfileDetails extends React.Component {
+          componentDidMount(){
+              if (!(this.props.profiledata=={})){
+                  putDataIntoProfileForm(this.props.profiledata);
+              }
+          }
+      
+          render() {
+              return (
+                  <div id="ui_profile">
+                    <Grow in={true} mountOnEnter unmountOnExit >
+                      <Box>
+                        <div className="prof-box">
+                          <h1>f0rt9it32d</h1>
+                          <h2 style={{marginLeft: 'auto', marginRight: 'auto'}}>Profile</h2>
+                        </div>
+                        <div className="prof-box">  
+                          <TextField error={this.props.iserror.usererror} helperText={this.props.errors.profuser} defaultValue={this.props.profiledata.user} disabled variant ='outlined' name='user'  /><br/><br/>
+                          <TextField error={this.props.iserror.passworderror} helperText={this.props.errors.profpassword}   label='password' variant ='outlined' name='password' type='password' /><br/><br/>
+                          <TextField error={this.props.iserror.cpassworderror} helperText={this.props.errors.profcpassword}   label='confirm password' variant ='outlined' name='confirmpassword' type='password' /><br/><br/>
+                        </div>          
+                        <div className="prof-box">
+                          <FormLabel component="legend">Select your skill level</FormLabel>
+                          <RadioGroup row name="skill" defaultValue={this.props.profiledata.skill} /*onChange={handleRadioChange}*/>
+                              <FormControlLabel name='skill' value="beginner" control={<Radio name="skill" />} label="Beginner" />
+                              <FormControlLabel name='skill' value="intermediate" control={<Radio name="skill" />} label="Intermediate" />
+                              <FormControlLabel name='skill' value="advanced" control={<Radio name="skill" />} label="Advanced" />
+                          </RadioGroup>
+                          <FormHelperText style={{color:"red"}}>{this.props.errors.profskill}</FormHelperText><br/>
+                        </div>
+                        <div className="prof-box"> 
+                          <FormLabel>Birthday</FormLabel><br/><br/>
+                          <FormLabel>Year</FormLabel><br/>
+                          <Input margin="dense" inputProps={{ step: 1, min: 1900, max: 2100, type: 'number' }} name='year' defaultValue={1999} /><br/><br/>
+                          <FormHelperText style={{color:"red"}}>{this.props.errors.profyear}</FormHelperText><br/>
+                          <InputLabel>Month</InputLabel>
+                          <Select defaultValue={this.props.profiledata.month} variant="outlined"  id='month' name='month'>
+                            <MenuItem value="">None</MenuItem>
+                            <MenuItem value='Jan'>January</MenuItem>
+                            <MenuItem value='Feb'>February</MenuItem>
+                            <MenuItem value='Mar'>March</MenuItem>
+                            <MenuItem value='Apr'>April</MenuItem>
+                            <MenuItem value='May'>May</MenuItem>
+                            <MenuItem value='Jun'>June</MenuItem>
+                            <MenuItem value='Jul'>July</MenuItem>
+                            <MenuItem value='Aug'>August</MenuItem>
+                            <MenuItem value='Sep'>September</MenuItem>
+                            <MenuItem value='Oct'>October</MenuItem>
+                            <MenuItem value='Nov'>November</MenuItem>
+                            <MenuItem value='Dec'>December</MenuItem>
+                          </Select>
+                          <FormHelperText style={{color:"red"}}>{this.props.errors.profmonth}</FormHelperText><br/><br/>
+                          <FormLabel component="legend">Day</FormLabel>
+                          <Input margin="dense" inputProps={{ step: 1, min: 1, max: 31, type: 'number' }} name='day' defaultValue={1} /><br/><br/>
+                          <FormHelperText style={{color:"red"}}>{this.props.errors.profday}</FormHelperText><br/>
+                        </div> 
+                        <div className="prof-box"> 
+                          <Button variant='contained' color='primary' onClick={this.props.clickHandler} value={'profile'}> Update Profile </Button><br/><br/>
+                          <Button variant='contained' color='secondary' onClick={this.props.clickHandler} value={'delete'}> Delete Profile </Button><br/><br/>
+                          <div className="form-errors"  colSpan="2">{this.props.errors.profdb}</div>
+                          <div className="form-status"  colSpan="2">{this.props.success}</div>  
+                        </div> 
+                      </Box>
+                    </Grow> 
+                  </div>
+              );
+          }
+      }
+      
+
+      //parent class for all components, contains all data for components, conditionally renders the current page
+      class PageControl extends React.Component {
+          constructor(props) {
+              super(props);
+              this.state = {
+                  page: 'login', curuser: '', curpassword: '', //current user info 
+                  user: '', password: '', db: '', login: '', // login form errors
+                  reguser: '', regdb: '', regpassword: '', regcpassword: '', regskill: '', regyear: '', regmonth: '', regday: '', regtime: '', //registration form errors
+                  profuser: '', profdb: '', profpassword: '', profcpassword: '', profskill: '', profyear: '', profmonth: '', profday: '', proftime: '', //profile form
+                  profiledata: {}, success: '', loggedin: false, checked: false   
+              };
+
+              this.loginClickHandler = this.loginClickHandler.bind(this);
+              this.registerClickHandler = this.registerClickHandler.bind(this);
+              this.navigationClickHandler = this.navigationClickHandler.bind(this);
+              this.profileClickHandler = this.profileClickHandler.bind(this);
+              this.permissionClickHandler = this.permissionClickHandler.bind(this);
+          }
+      
+          loginClickHandler(e){
+              var val = e.currentTarget.value;
+              if (val === 'register'){
+                  this.setState( (prevState, props) => {
+                    return {page: 'register', //goes to register page
+                            user: '',     
+                            password: '',
+                            login: '',
+                            db:'',
+                            checked:true};
+                  });
+              } else if (val ==='login') {
+                  gui_login(this); //gets input, makes ajax request which sets the state accordingly
+              }
+          }
+          
+          
+
+          permissionClickHandler(e){ 
+              grantPermissions();
+          }
+      
+          //handler for register buttons
+          registerClickHandler(e){
+              
+              var val = e.currentTarget.value;
+              this.setState( (prevState, props) => {
+                  if (val === 'login'){
+                    return { page: 'login' };
+                  }
+              });
+      
+              if (val==='login') { //goes back to login page
+                  this.setState((prevState, props) => {
+                    return { page: 'login' };
+                  });
+              } else if (val === 'register') { //registers
+                  gui_register(this);
+              }
+          }
+        
+          // handler for profile buttons
+          profileClickHandler(e){
+              
+              var val = e.currentTarget.value;
+              if (val==='profile'){
+                  gui_profile(this, this.state.curuser, this.state.curpassword);
+              } else if (val==='delete'){
+                  gui_delete(this, this.state.curuser);
+              } 
+          }
+      
+          //handler for navigation buttons
+          navigationClickHandler(e){
+              
+              var curpage = this.state.page;
+              var val = e.currentTarget.value;
+              
+              if (val!='play' && curpage == 'play'){ 
+                pauseGame();
+              }
+
+              if (val==='play' && curpage != 'play') { //prevents rerender on selecting the same page
+                  this.setState((prevState, props) => {
+                      return { page: 'play' };
+                  });
+              } else if (val === 'instructions' && curpage != 'instructions') {
+                  this.setState((prevState, props) => {
+                      return { page: 'instructions'};
+                  });
+              } else if (val === 'profile' && curpage != 'profile') {
+                  var user = this.state.curuser;
+                  var password = this.state.curpassword;
+                  gui_profile_load(this, user, password); //loads profile info
+              } else if (val === 'logout' && curpage != 'logout') {
+                  server.close();
+
+                  gui_logout(this, this.state.curuser)
+
+                  /*this.setState((prevState, props) => {
+                      return { page: 'login', curuser: '', curpassword: '', success: ''};
+                  });*/
+              }
+          }
+      
+          
+          profileChangeHandler(e){
+              return;
+          }
+      
+          render(){
+              //detects if any error exists for corresponding boxes
+              var usererror=false;
+              var passworderror=false;
+              var cpassworderror=false;
+              var skillerror =false;
+              var yearerror=false;
+              var montherror=false;
+              var dayerror=false;
+              switch(this.state.page){
+                  case 'login':
+                      console.log("back to login");
+
+                      
+                      //console.log(localStorage.getItem("loggedIn")=='true');
+                      if (localStorage.getItem("loggedIn")=='true') {
+                          gui_refresh(this, this.state.curuser);
+                          //console.log("not still login?");
+                          return null;
+                      }
+
+                      //console.log("still login?");
+
+                      if (this.state.user!=''){
+                          usererror=true;
+                      } 
+                      if (this.state.password!=''){
+                          passworderror=true;
+                      }
+                      const { loginUsername, loginPassword } = this.state;
+                      const loginValues = {loginUsername, loginPassword};
+                      const { user, password, login, db} = this.state;
+                      const iserror = {usererror, passworderror}; //values for form error properties
+                      const errors = {user, password, login, db}; //error messages
+                      return (
+                          <LoginDetails iserror={iserror} errors={errors} values={loginValues} clickHandler={this.loginClickHandler} changeHandler={this.loginChangeHandler}/>
+                      );
+                  case 'register':
+                      //checks each error value in state to detect if error exists or not
+                      if (this.state.reguser!=''){
+                          usererror=true;
+                      } 
+                      if (this.state.regpassword!=''){
+                          passworderror=true;
+                      }
+                      if (this.state.regcpassword!=''){
+                          cpassworderror=true;
+                      } 
+                      if (this.state.regskill!=''){
+                          skillerror=true;
+                      }
+                      if (this.state.regyear!=''){
+                          yearerror=true;
+                      } 
+                      if (this.state.regmonth!=''){
+                          montherror=true;
+                      }
+                      if (this.state.regday!=''){
+                          dayerror=true;
+                      } 
+                      const {reguser, regpassword, regcpassword, regskill, regyear, regmonth, regday, register, regdb} = this.state;
+                      const regiserror = {usererror, passworderror, cpassworderror, skillerror, yearerror, montherror, dayerror}; //values for form error properties
+                      const regerrors = {reguser, regpassword, regcpassword, regskill, regyear, regmonth, regday, register, regdb}; //error messages
+                      return (		
+                          <RegisterDetails iserror={regiserror} errors={regerrors} /*values={values}*/ clickHandler={this.registerClickHandler}/>
+                      );
+                  case 'profile':
+                      //checks each error value in state to detect if error exists or not
+                      if (this.state.profuser!=''){
+                          usererror=true;
+                      } 
+                      if (this.state.profpassword!=''){
+                          passworderror=true;
+                      }
+                      if (this.state.profcpassword!=''){
+                          cpassworderror=true;
+                      } 
+                      if (this.state.profskill!=''){
+                          skillerror=true;
+                      }
+                      if (this.state.profyear!=''){
+                          yearerror=true;
+                      } 
+                      if (this.state.profmonth!=''){
+                          montherror=true;
+                      }
+                      if (this.state.profday!=''){
+                          dayerror=true;
+                      } 
+                      const {profuser, profpassword, profcpassword, profskill, profyear, profmonth, profday, profdb} = this.state;
+                      const profiserror = {usererror, passworderror, cpassworderror, skillerror, yearerror, montherror, dayerror}; //values for form error properties
+                      const proferrors = {profuser, profpassword, profcpassword, profskill, profyear, profmonth, profday, profdb}; //error messages
+                      return (		
+                          <div>
+                              <Navigation curpage={this.state.page} clickHandler={this.navigationClickHandler}/>
+                              <ProfileDetails success={this.state.success} profiledata={this.state.profiledata} iserror={profiserror} errors={proferrors} clickHandler={this.profileClickHandler}/>
+                          </div>
+                      );
+                  case 'play':
+                      return (
+                          <div>
+                              <Navigation curpage={this.state.page} clickHandler={this.navigationClickHandler}/>
+                              <GameWindow user={this.state.curuser} clickHandler={this.permissionClickHandler}/>
+                          </div>
+                      );
+                  case 'instructions':
+                      return(
+                          <div>
+                              <Navigation curpage={this.state.page} clickHandler={this.navigationClickHandler}/>
+                              <Instructions/>
+                          </div>  
+                      );
+                  default:
+              }                
+          }
+      }
+      
+      
+      
+      ReactDOM.render(
+          <div>
+              <PageControl />
+          </div>,
+          document.getElementById('root')
+      );  
+    </script>
+    <title>f0rt9it32d</title>
+  </head>
+  <body style="background-color: lightcoral;">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+   
+  </body>
+</html>
