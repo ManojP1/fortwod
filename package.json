@@ -1,0 +1,27 @@
+{
+  "name": "ftd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ftd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.5.3",
+    "JSON": "^1.0.0",
+    "babel-plugin-import": "^1.13.3",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.17.1",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "sqlite3": "^4.1.1",
+    "url": "^0.11.0",
+    "ws": "^7.2.3"
+  }
+}
