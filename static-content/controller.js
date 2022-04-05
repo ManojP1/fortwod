@@ -266,6 +266,7 @@ function gui_delete(page, user){
 		if(s){
 			var info = data;
 			page.setState((prevState, props) => {
+				localStorage.setItem("loggedIn", false);
 				return {page: 'login', curuser: '', curpassword: ''} ;
 			});
 		} else {

@@ -26,8 +26,8 @@ sqlite3 db/database.db < db/schema.sql
 
 echo  "*********
         Note: ws server port is static. https hosts the websocket port as well. Need to modify controller.js line 128 in setupGame().
-        Usuage: nodejs ftd.js 10345
-        Access: https://142.1.200.148:10345/
+        Usuage: nodejs fortwod.js 10345
+        Access: https://localhost:10345/
 *********"
-# http://142.1.200.148:PORT_NUMBER
+# http://localhost:PORT_NUMBER
 
