@@ -1,4 +1,4 @@
-# ftd
+# fortwod
 university webdev assignment
 
 Group project with starter code including game model given.
